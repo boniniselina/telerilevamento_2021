@@ -94,3 +94,14 @@ install.packages("RStoolbox")
 #per usarlo:
 library(RStoolbox)
 
+#visualizziamo l'immagine della zona di un altro periodo, per eseguire l'analisi multitemporale
+#1988 --> p224r63_1988_masked --> ripulitsa dal rumore
+p224r63_1988 <- brick("p224r63_1988_masked.grd")
+plot(p224r63_1988)
+plotRGB(p224r63_1988, r=3, g=2, b=1, stretch="Lin")
+plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin")
+
+#confronto 2011 vs 1988
+par(mfrow=c(2,1))
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="Lin")
