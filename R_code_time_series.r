@@ -34,6 +34,7 @@ plot(lst_2010)
 plot(lst_2015)
 
 #creo una lista di file che hanno lo stesso nome e che chiamo rlist
+#utile se le immagini sono tante, così non si devono caricare una ad una
 rlist <- list.files(pattern="lst")
 
 # funzione che permette di applicare una funzione ad una lista di file
@@ -48,4 +49,34 @@ plotRGB(TGr,1,2,3, stretch="Lin")
 
 #Installare pacchetto rasterVis
 install.packages("rasterVis")
+library(rasterVis)
 
+#permette di plottare tutti i livelli della nostra immagine, comprensivo di scala e legenda
+levelplot(TGr)
+
+#se vogliamo visualizzare solamente un componente dell'immagine totale (es. lst_2000)
+levelplot(TGr$lst_2000)
+
+cl <- colorRampPalette(c("blue","light blue","pink","red"))(100)
+levelplot(TGr,col.regions=cl)
+
+#se conosco anche il mese in cui sono state registrate le temperature, posso inserirlo. posso inserire anche un titolo
+levelplot(TGr,col.regions=cl, main="LST Variation in Time", names.attr=c("July 2000","July 2005", "July 2010", "July 2015"))
+
+#guardiamo ora le immagini relative allo scioglimento dei ghiacciai
+#facciamo una lista utilizzando come pattern comune "melt"
+meltlist <- list.files(pattern="melt")
+melt_import <- lapply(meltlist,raster)
+MGr <- stack(melt_import) 
+#per visualizzare tutti i vari livelli
+levelplot(MGr)
+
+#possiamo fare operazioni algebriche con le immagini
+#esempio, differenza fra i valori dell'immagine del 2007 e del 1979 (melt_amount)
+melt_amount <- MGr$X2007annual_melt - MGr$X1979annual_melt #sottrazione
+clb <- colorRampPalette(c("blue","white","red"))(100)
+levelplot(melt_amount,col.regions=clb)
+
+#installare il pacchetto "knitr"
+install.packages("knitr")
+library(knitr)
