@@ -37,4 +37,22 @@ plotRGB(peru,3,4,2, stretch="Lin") #tono del verde
 plotRGB(peru,4,2,3, stretch="Lin") #tono del rosso
 plotRGB(peru,8,3,2, stretch="Lin") #infrarosso
 
+#andiamo ora a fare la classificazione di immagine 
+
+#prima di tutto bisogna richiamare il paccketto RStoolbox, poiché andremo ad utilizzare una funzione in esso contenuta
+library(RStoolbox)
+
+#utilizziamo un comando per usare solo dei pixel specifici come campione per costruire il training set
+set.seed(1000)
+#UNSUPERVISED CLASSIFICATION --> usa una forma randomizzata per la scelta dei pixel
+#la funzione che useremo è unsuperClass
+#bisogna dare come argomento: il nome dell'immagine, quanti pixel da utilizzare come training set (nSamples), il numero di classi (nClasses) 
+
+# facciamo delle prove con diversi numeri di classi
+
+#con 10 classi:
+peru1c <- unsuperClass(peru, nClasses=10)
+
+plot(peru1c$map)
+
 
