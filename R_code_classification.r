@@ -54,3 +54,28 @@ plot(soc$map)
 #proviamo ad aumentare il numero di classi
 socc <- unsuperClass(so, nClasses=20)
 plot(socc$map)
+
+
+#GRAND CANYON
+
+#si ricorda che le due librerie da richiamare sono "raster" ed "RStoolbox".
+#library (raster)
+#library (RStoolbox)
+
+#settare la cartella di lavoro
+setwd("C:/lab/Grand_Canyon") #io ho salvato i dati nella cartella Grand_Canyon all'interno della cartella lab in C:
+gc <- brick("dolansprings_oli_2013088_canyon_lrg.jpg")
+
+#anche in questo caso, l'immagine è caratterizzata da bande già montate, per cui 
+#la banda del rosso è già al posto 1, il verde al 2 e il blu al 3
+plotRGB(gc, 1, 2, 3, stretch="Lin")
+
+#proviamo a fare una classificazione con due classi
+gcc2 <- unsuperClass(gc, nClasses=2)
+plot(gcc2$map) #la mappa creata ha più di 58 milioni di pixel
+
+#con 4
+gcc4 <- unsuperClass(gc, nClasses=4)
+plot(gcc4$map)
+
+
