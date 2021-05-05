@@ -8,6 +8,13 @@
 
 library(raster)
 library(RStoolbox)
+#installare il pacchetto
+#install.packages("rasterdiv")
+#e carichiamo il pacchetto rasterdiv
+library(rasterdiv)
+#installare anche il pacchetto rasterVis
+#install.packages("rasterVis")
+library(rasterVIS)
 
 setwd("C:/lab/deforestazione")
 
@@ -24,9 +31,6 @@ plotRGB(defor1, r=1, g=2, b=3, stretch="Lin")
 plotRGB(defor2, r=1, g=2, b=3, stretch="Lin")
 #vediamo la multitemporalità della zona
 #acqua chiara = molto trasporto solido, perché l'acqua pura assorbe l'infrarosso e verrebbe di oclore scuro (tendente al blu o nero)
-
-#installare il pacchetto
-install.packages("rasterdiv")
 
 #DVI
 #DIV = NIR-RED
@@ -89,3 +93,12 @@ plot(vi1, col=cl)
 vi2 <- spectralIndices(defor2, green = 3, red = 2, nir = 1)
 plot(vi2, col=cl)
 
+#abbiamo la possibilità di visualizzare l'NDVI a scala globale
+plot(copNDVI)
+# è possibile eliminare l'acqua 
+# prendiamo i pixel con i valori 253, 254 e 255 e li riclassifichiamo come NA
+
+copNDVI <- reclassify(copNDVI, cbind(253:255, NA)) #sovrascriviamo la stessa variabile
+plot(copNDVI)
+
+levelplot(copNDVI)
