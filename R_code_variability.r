@@ -2,6 +2,11 @@
 
 library(raster)
 library(RStoolbox)
+library(ggplot2)
+library(gridExtra)
+#install.packages("viridis")
+library(viridis)
+
 
 setwd("C:/lab/similaun/")
 
@@ -93,16 +98,16 @@ ndvisd5 <- focal(ndvi, w=matrix(1/25, nrow=5, ncol=5), fun=sd)
 plot(ndvisd5, col=clsd)
 
 # Un altro modo per compattare i dati in un solo layer è di utilizzare la PCA
-sentinel_pca <- rasterPCA(sent)
-plot(sentinel_pca$map)
+sentpca <- rasterPCA(sent)
+plot(sentpca$map)
 
 #la prima componente principale è quella che ha la maggior parte del range spiegato
 #aumentando il numero, si perde la maggior parte dell'informaizone
 
-sentinel_pca #per vedere come è composta
+sentpca #per vedere come è composta
 
 #facciamo un summarty per vedere quanta variabilità spiegano le varie componenti
-summary(sentinel_pca$model)
+summary(sentpca$model)
 
 #Importance of components:
 #                           Comp.1     Comp.2      Comp.3 Comp.4
@@ -112,4 +117,55 @@ summary(sentinel_pca$model)
  
 #la prima PCA spega 67.36804% della variabilità, in proporzione è quella con la maggiore variabilità
 #la seconda aggiunge il 32.25753%, per un totale del 99.62557%, è perpendicolare alla prima
+
+pc1 <- sentpca$map$PC1
+
+pc1sd5 <- focal(pc1, w=matrix(1/25, nrow=5, ncol=5), fun=sd)
+clsd <- colorRampPalette(c('blue', 'green', 'magenta', 'orange', 'brown', 'red', 'yellow'))(100)
+plot(pc1sd5, col= clsd)
+
+#usiamo la funzione source per richiamare un pezzo di codice già scritto
+source("source_test_lezione.r")
+
+#alta variazione standard si ha in corrispondenza di alte variazioni morfologiche
+
+source("source_ggplot.r")
+
+ggplot() +
+geom_raster(pc1sd5, mapping = aes (x=x, y=y, fill=layer))
+#ggplot() così aprirebbe solo una finestra vuota. il pacchetto aggiunge dei blocchi utilizzando +
+#possiamo aggiungere delle geometrie (es. punti, linee...) con geom_point o geo_line... 
+#per geom_raster richiede come argomento mapping, inerente alle aestetics (x e y del grafico, come valore di riempimento ci mettiamo il layer)
+
+#se cerchiamo su internet come funziona il pacchetto, ci sono anche i nomi delle palette di colori!
+# https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+#la funzione per poterle utilizzare si chiama scale_fill_viridis()
+
+ggplot() +
+geom_raster(pc1sd5, mapping = aes (x=x, y=y, fill=layer)) +
+scale_fill_viridis() #di default, c'è la palette viridis
+
+#per cambiare il titolo: ggtitle("Standard deviation of PC1 by viridis colour scale")
+
+P1 <- ggplot() +
+geom_raster(pc1sd5, mapping = aes (x=x, y=y, fill=layer)) +
+scale_fill_viridis() +
+ggtitle("Standard deviation of PC1 by viridis colour scale")
+
+#proviamo con la palette magma
+P2 <- ggplot() +
+geom_raster(pc1sd5, mapping = aes (x=x, y=y, fill=layer)) +
+scale_fill_viridis (option = "magma") +
+ggtitle("Standard deviation of PC1 by magma colour scale")
+
+#con turbo
+P3 <- ggplot() +
+geom_raster(pc1sd5, mapping = aes (x=x, y=y, fill=layer)) +
+scale_fill_viridis (option = "turbo") +
+ggtitle("Standard deviation of PC1 by turbo colour scale") # è la rainbow
+#per una questione visiva, meglio utilizzare le prime due
+
+#posso mettere insieme questi grafici grazie al pacchetto gridExtra
+grid.arrange(P1,P2,P3, ncol=3)
+
 
