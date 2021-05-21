@@ -43,6 +43,16 @@ par(mfrow=c(1,2))
 plotRGB(peru)
 plotRGB(peru, stretch="Lin")
 
+#posso caricare anche il set di singole bande (anch'esse ritagliate in modo che si visualizzi la stessa area)
+rlist <- list.files(pattern="banda")
+import <- lapply(rlist, raster)
+perub <- stack(import) 
+
+#in questo modo posso montare le bande a piacimento
+#blu = T19LBE_20//21_B02_10m --> peru_banda_blu.png
+#verde = T19LBE_20//21_B03_10m --> peru_banda_green.png
+#rosso = T19LBE_20//21_B04_10m --> peru_banda_red.png
+#infrarosso = T19LBE_20//21_B08_10m --> peru_banda_NIR.png
 
 #Classificazione di immagine
 #UNSUPERVISED CLASSIFICATION --> usa una forma randomizzata per la scelta dei pixel
@@ -54,10 +64,20 @@ plotRGB(peru, stretch="Lin")
 #con 5 classi:
 peru1c <- unsuperClass(peru, nClasses=5)
 #per visualizzare la mappa, essendo uno degli elementi creati con unsuperClass, è necessario legarla al nome con il simbolo $
-plot(peru1c$map)
-legend(x=x, y=y, legend = c(", # Vector with the name of each group
+#ho creato una palette di colori 
+cl2 <- colorRampPalette(c('brown', 'pink3', 'steelblue3', 'seagreen1', 'white'))(100)
+
+plot(peru1c$map, cl2)
+#CLASSE 5 = Vegetation and phyllites and clays rich in ferro magnesian, 
+#CLASSE 4 = Fanglomerate composed of rock with magnesium, 
+#CLASSE 3 = Calcareous sandstones rich in sulphurous minerals, 
+#CLASSE 2 = Red clay, fangolitas (mud) and ariitas (sand), 
+#CLASSE 1 = Claystones rich in iron oxides
+
+
 
 #proviamo a calcolare la PCA dell'immagine
-peru_pca <- rasterPCA(peru)
-plot(peru_pca$map)
+#peru_pca <- rasterPCA(peru)
+#plot(peru_pca$map)
+
 
