@@ -76,8 +76,11 @@ plot(peru1c$map, cl2)
 
 
 
-#proviamo a calcolare la PCA dell'immagine
-#peru_pca <- rasterPCA(peru)
-#plot(peru_pca$map)
+NIR <- perub$peru_banda_NIR
+red <- perub$peru_banda_red
+ndvi <- (NIR-red)/(NIR+red)
+cl <- colorRampPalette(c('darkblue','yellow','red','black'))(100)
+plot(ndvi, col=cl)
+
 
 
