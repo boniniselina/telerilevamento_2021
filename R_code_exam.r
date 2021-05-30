@@ -67,15 +67,15 @@ peru1c <- unsuperClass(peru, nClasses=5)
 #ho creato una palette di colori 
 cl2 <- colorRampPalette(c('brown', 'pink3', 'steelblue3', 'seagreen1', 'white'))(100)
 
-plot(peru1c$map, cl2)
+plot(peru1c$map, col=cl2)
 #CLASSE 5 = Vegetation and phyllites and clays rich in ferro magnesian, 
 #CLASSE 4 = Fanglomerate composed of rock with magnesium, 
 #CLASSE 3 = Calcareous sandstones rich in sulphurous minerals, 
 #CLASSE 2 = Red clay, fangolitas (mud) and ariitas (sand), 
 #CLASSE 1 = Claystones rich in iron oxides
 
-
-
+#Per verificare l'effettiva ppresenza della vegetazione, ho fatto ricorso all'indice di vegetazione normalizzato
+#NDVI = (NIR-Red)/(NIR+Red)
 NIR <- perub$peru_banda_NIR
 red <- perub$peru_banda_red
 ndvi <- (NIR-red)/(NIR+red)
@@ -84,3 +84,40 @@ plot(ndvi, col=cl)
 
 
 
+#Faccio lo stesso procedimento con la seconda area di studio: Las Montañas de 14 Colores, situate nella porzione Nord-Occidentale dell'Argentina
+#essendo un'area più vasta rispetto a Vinicunca, la scala della mappa è stata riportata a 1:50.000. 
+
+argentina <- brick("arg_50000.png")
+par(mfrow=c(1,2))
+plotRGB(argentina)
+plotRGB(argentina, stretch="Lin")
+
+rlist <- list.files(pattern="argentina")
+import1 <- lapply(rlist, raster)
+argb <- stack(import1) 
+
+# plotRGB(argb, r=4, g=3, b=2, stretch="Lin") #NIR, red, green
+# plotRGB(argb, r=4, g=3, b=1, stretch="Lin") #NIr, red, blue
+
+arg1c <- unsuperClass(argentina, nClasses=5)
+cl1 <- colorRampPalette(c('white', 'brown', 'seagreen1', 'pink3', 'steelblue3'))(100)
+plot(arg1c$map, col=cl1)
+
+#CLASSE 5 = Calcareous sandstones rich in sulphurous minerals, 
+#CLASSE 4 = Red clay, fangolitas (mud) and ariitas (sand), 
+#CLASSE 3 = Fanglomerate composed of rock with magnesium, 
+#CLASSE 2 = Claystones rich in iron oxides, 
+#CLASSE 1 = Vegetation and phyllites and clays rich in ferro magnesian
+
+#con la palette voglio associare alle fomazioni gli stessi colori che ho associato all'area in Perù:
+#marrone --> argilliti ricche in ossidi di ferro
+#rosa --> argille rosse, fangolitas e ariitas ricche di manganese
+#blu --> arenarie calcaree ricche in minerali di zolfo
+#verde acqua --> fanglomerato
+#bianco --> vegetazione e filliti
+
+NIRa <- argb$argentina_banda_NIR
+reda <- agrb$argentina_banda_red
+ndvia <- (NIRa-reda)/(NIRa+reda)
+cl <- colorRampPalette(c('darkblue','yellow','red','black'))(100)
+plot(ndvia, col=cl)
