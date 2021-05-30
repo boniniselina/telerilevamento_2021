@@ -85,7 +85,7 @@ plot(ndvi, col=cl)
 
 
 #Faccio lo stesso procedimento con la seconda area di studio: Las Montañas de 14 Colores, situate nella porzione Nord-Occidentale dell'Argentina
-#essendo un'area più vasta rispetto a Vinicunca, la scala della mappa è stata riportata a 1:50.000. L'immagine è datata al 5/11/2020.
+#essendo un'area più vasta rispetto a Vinicunca, la scala della mappa è stata riportata a 1:50.000. L'immagine è datata al 02/04/2021.
 
 argentina <- brick("arg_50000.png")
 par(mfrow=c(1,2))
