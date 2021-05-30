@@ -71,10 +71,10 @@ plot(peru1c$map, col=cl2)
 #CLASSE 5 = Vegetation and phyllites and clays rich in ferro magnesian, 
 #CLASSE 4 = Fanglomerate composed of rock with magnesium, 
 #CLASSE 3 = Calcareous sandstones rich in sulphurous minerals, 
-#CLASSE 2 = Red clay, fangolitas (mud) and ariitas (sand), 
+#CLASSE 2 = Red clay, fangolitas (mud) and arilitas (sand), 
 #CLASSE 1 = Claystones rich in iron oxides
 
-#Per verificare l'effettiva ppresenza della vegetazione, ho fatto ricorso all'indice di vegetazione normalizzato
+#Per verificare l'effettiva presenza della vegetazione, ho fatto ricorso all'indice di vegetazione normalizzato
 #NDVI = (NIR-Red)/(NIR+Red)
 NIR <- perub$peru_banda_NIR
 red <- perub$peru_banda_red
@@ -85,7 +85,7 @@ plot(ndvi, col=cl)
 
 
 #Faccio lo stesso procedimento con la seconda area di studio: Las Montañas de 14 Colores, situate nella porzione Nord-Occidentale dell'Argentina
-#essendo un'area più vasta rispetto a Vinicunca, la scala della mappa è stata riportata a 1:50.000. 
+#essendo un'area più vasta rispetto a Vinicunca, la scala della mappa è stata riportata a 1:50.000. L'immagine è datata al 5/11/2020.
 
 argentina <- brick("arg_50000.png")
 par(mfrow=c(1,2))
@@ -104,7 +104,7 @@ cl1 <- colorRampPalette(c('white', 'brown', 'seagreen1', 'pink3', 'steelblue3'))
 plot(arg1c$map, col=cl1)
 
 #CLASSE 5 = Calcareous sandstones rich in sulphurous minerals, 
-#CLASSE 4 = Red clay, fangolitas (mud) and ariitas (sand), 
+#CLASSE 4 = Red clay, fangolitas (mud) and arilitas (sand), 
 #CLASSE 3 = Fanglomerate composed of rock with magnesium, 
 #CLASSE 2 = Claystones rich in iron oxides, 
 #CLASSE 1 = Vegetation and phyllites and clays rich in ferro magnesian
