@@ -84,6 +84,43 @@ plot(ndvi, col=cl)
 
 
 
+# Provo a fare un'analisi della variabilità.
+# Utilizzo la funzione aggregate per rendere l'immagine più leggera
+peru_res <- aggregate(peru, fact=10)
+#a questo punto, abbiamo un'immagine che ha una risoluzione di 100x100m, abbiamo diminuito linearmente di un fattore 10
+#aumentare la grandezza del pixel vuol dire anche averne 10 volte in meno rispetto al numero di partenza
+
+#confrontiamo le due immagini
+par(mfrow=c(2,1))
+plotRGB(peru, stretch="Lin")
+plotRGB(peru_res, stretch="Lin")
+
+#PCA
+#Principal Component Analysis per i Raster
+#compattiamo in un minor numero di bande
+#riduciamo da 2 dimensioni ad una sola, prendendo la PC1 (90% della varianza)
+#la funzione è rasterPCA
+
+peru_pca <- rasterPCA(peru_res)
+
+#vediamolo in grafico, facendo il plot 
+plot(peru_pca$map) 
+peru_pca$model
+
+pc1 <- peru_pca$map$PC1
+
+pc1sd5 <- focal(pc1, w=matrix(1/25, nrow=5, ncol=5), fun=sd)
+clsd <- colorRampPalette(c('blue', 'green', 'magenta', 'brown', 'red', 'orange', 'yellow'))(100)
+plot(pc1sd5, col= clsd)
+
+ggplot() +
+geom_raster(pc1sd5, mapping = aes (x=x, y=y, fill=layer)) +
+scale_fill_viridis() #di default, c'è la palette viridis
+
+
+
+
+
 #Faccio lo stesso procedimento con la seconda area di studio: Las Montañas de 14 Colores, situate nella porzione Nord-Occidentale dell'Argentina
 #essendo un'area più vasta rispetto a Vinicunca, la scala della mappa è stata riportata a 1:50.000. L'immagine è datata al 02/04/2021.
 
