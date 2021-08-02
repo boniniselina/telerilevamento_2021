@@ -10,15 +10,12 @@
 
 #scaricare il pacchetto "raster" e permettere al programma di utilizzarlo con la funzione library(raster)
 library(raster)
-#scaricare anche il pacchetto "rasterVis" 
-library(rasterVis)
-#ed il pacchetto RStoolbox, poiché andremo ad utilizzare una funzione in esso contenuta per fare la classificazione di immagine
+#il pacchetto RStoolbox, poiché andremo ad utilizzare una funzione in esso contenuta per fare la classificazione di immagine
 library(RStoolbox)
+#usufruisco anche dei pacchetti rgdal e ggplot 
+library(rgdal)
+library(ggplot2)
 
-#possono essere utili anche 
-#library(ggplot2)
-#library(gridExtra)
-#library(viridis)
 
 #Settare la cartella di lavoro (chiamata "esame", che io creato in C:)
 #Set working directory (mine is called "esame" and has been created in C:) 
@@ -84,41 +81,7 @@ plot(ndvi, col=cl)
 
 
 
-# Provo a fare un'analisi della variabilità.
-# Utilizzo la funzione aggregate per rendere l'immagine più leggera
-peru_res <- aggregate(peru, fact=10)
-#a questo punto, abbiamo un'immagine che ha una risoluzione di 100x100m, abbiamo diminuito linearmente di un fattore 10
-#aumentare la grandezza del pixel vuol dire anche averne 10 volte in meno rispetto al numero di partenza
-
-#confrontiamo le due immagini
-par(mfrow=c(2,1))
-plotRGB(peru, stretch="Lin")
-plotRGB(peru_res, stretch="Lin")
-
-#PCA
-#Principal Component Analysis per i Raster
-#compattiamo in un minor numero di bande
-#riduciamo da 2 dimensioni ad una sola, prendendo la PC1 (90% della varianza)
-#la funzione è rasterPCA
-
-peru_pca <- rasterPCA(peru_res)
-
-#vediamolo in grafico, facendo il plot 
-plot(peru_pca$map) 
-peru_pca$model
-
-pc1 <- peru_pca$map$PC1
-
-pc1sd5 <- focal(pc1, w=matrix(1/25, nrow=5, ncol=5), fun=sd)
-clsd <- colorRampPalette(c('blue', 'green', 'magenta', 'brown', 'red', 'orange', 'yellow'))(100)
-plot(pc1sd5, col= clsd)
-
-ggplot() +
-geom_raster(pc1sd5, mapping = aes (x=x, y=y, fill=layer)) +
-scale_fill_viridis() #di default, c'è la palette viridis
-
-
-
+# --------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 #Faccio lo stesso procedimento con la seconda area di studio: Las Montañas de 14 Colores, situate nella porzione Nord-Occidentale dell'Argentina
@@ -158,3 +121,69 @@ reda <- agrb$argentina_banda_red
 ndvia <- (NIRa-reda)/(NIRa+reda)
 cl <- colorRampPalette(c('darkblue','yellow','red','black'))(100)
 plot(ndvia, col=cl)
+
+# ------------------------------------------------------------------------------------------------------------------------
+
+#creo un dataset con le firme spettrali delle varie componenti classificate della formazione di Yacoraite
+# prima di tutto mi scelgo i punti di cui voglio conoscere la riflettanza grazie al comando click.
+#ho bisogno del pacchetto rgdal
+
+click(peru, id=T, xy=T, cell=T, type="p", pch=16, col="yellow")
+#Query by licking on a map --> mi permette di cliccare direttamente su una mappa e di ottenerne le specifiche informazioni
+# argomenti: 
+      # nome mappa su cui vogliamo cliccare, 
+      # nome identificativo ID per ogni punto, 
+      # xy, per utilizzare le coordinate spaziali (T=TRUE),
+      # cell perché puntiamo su un pixel
+      # faremo un click di tipo puntuale, quindi punto (=p)
+      # pacchetto pch --> forme disponibili in R per il punto, 16 = pallino chiuso
+      # colore del simbolo (col)
+# se clicco su un punto della mappa dove c'è vegetazione, ottengo una piccola "tabella":
+
+
+#       x      y     cell peru_25000.1 peru_25000.2 peru_25000.3 peru_25000.4
+#1 2865.5 3102.5 60380354          158           67           44          255 #Classe1
+#       x      y     cell peru_25000.1 peru_25000.2 peru_25000.3 peru_25000.4 
+#1 3396.5 1041.5 84478097          170          121           95          255 #Classe2
+#       x      y     cell peru_25000.1 peru_25000.2 peru_25000.3 peru_25000.4
+#1 6227.5 3959.5 50363672          238          188          133          255 #Classe3
+#        x      y     cell peru_25000.1 peru_25000.2 peru_25000.3 peru_25000.4
+#1 11464.5 1041.5 84486165          115           91           65          255 #Classe4 
+#       x      y     cell peru_25000.1 peru_25000.2 peru_25000.3 peru_25000.4
+#1 8616.5 5219.5 35634141           54           46           17          255 #Classe5
+
+
+#creiamo ora un dataset, definendo prima le colonne:
+band <- c(1,2,3)
+red_ironoxides <- c(158, 67, 44)
+rose_redclays_fangolitas <- c(170, 121, 95)
+yellow_solfur <- c(238, 188, 133)
+brown_fanglomerate <- c(115, 91, 65)
+green_phyllites <- c(54, 46, 17)
+
+#adesso le mettiamo insieme, creando il dataframe
+spectrals <- data.frame(band, red_ironoxides, rose_redclays_fangolitas, yellow_solfur, brown_fanglomerate, green_phyllites)
+
+#risultato:
+#  band red_ironoxides rose_redclays_fangolitas yellow_solfur brown_fanglomerate
+#1    1            158                      170           238                115
+#2    2             67                      121           188                 91
+#3    3             44                       95           133                 65
+#  green_phyllites
+#1              54
+#2              46
+#3              17
+
+#adesso andiamo ad utilizzare il pacchetto ggplot2 per plottare le firme spettrali
+ggplot(spectrals, aes(x=band))+
+      geom_line(aes(y=red_ironoxides), color= "red")+ 
+      geom_line(aes(y=rose_redclays_fangolitas), color= "pink")+
+      geom_line(aes(y=yellow_solfur), color= "darkgoldenrod1")+
+      geom_line(aes(y=brown_fanglomerate), color= "brown")+
+      geom_line(aes(y=green_phyllites), color= "green")+
+      labs(x="wavelength", y="reflectance") 
+  #argomenti: 
+            # dataset
+            # asse x = bande
+            # asse y le varie spectral signatures che abbiamo, quindi la riflettanza
+       # (per definire gli assi usiamo aes), mentre per inserire le geometrie usiamo geom_line (line perché vogliamo una linea)
